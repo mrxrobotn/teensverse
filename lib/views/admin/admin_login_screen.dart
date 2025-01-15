@@ -56,21 +56,19 @@ class _AdminPageState extends State<AdminPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Spacer(),
-                        Image.asset('assets/Backgrounds/logo_metaverse.png'),
-                        const SizedBox(
-                          child: Column(children: [
-                            Text(
-                              "Welcome to the admin page",
-                              style: TextStyle(
-                                  fontSize: 60, fontFamily: "Poppins", height: 1.2),
-                            ),
-                            SizedBox(
-                              height: 16,
-                            ),
-                            Text(
-                                "Don't skip design. Learn design and code, by builder real apps with Flutter and Swift. Complete courses about best tools.")
-                          ]),
+                        Image.asset('assets/Backgrounds/logo.png'),
+                        const Spacer(
+                          flex: 2,
                         ),
+                        const Text(
+                          "Welcome to the admin page",
+                          style: TextStyle(
+                              fontSize: 60, fontFamily: "Poppins", height: 1.2),
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        const Text("Don't skip design. Learn design and code, by builder real apps with Flutter and Swift. Complete courses about best tools."),
                         const Spacer(
                           flex: 2,
                         ),

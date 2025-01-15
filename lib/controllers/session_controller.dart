@@ -52,10 +52,8 @@ Future<List<Session>> fetchActiveSessions() async {
   }
 }
 
-Future<void> updateSession(String name, int slotTal, int slotEnt, bool isActive, List<dynamic> users, bool shouldUpdateUsers) async {
+Future<void> updateSession(String name, bool isActive, List<dynamic> users, bool shouldUpdateUsers) async {
   final Map<String, dynamic> requestBody = {
-    'slotTal': slotTal,
-    'slotEnt': slotEnt,
     'isActive': isActive,
   };
 
@@ -79,7 +77,7 @@ Future<void> updateSession(String name, int slotTal, int slotEnt, bool isActive,
   }
 }
 
-Future<void> createSession(String name, int slotTal, int slotEnt, bool isActive, List<String> users, List<Map<String, dynamic>> votes) async {
+Future<void> createSession(String name, bool isActive, List<String> users) async {
 
   final response = await http.post(
     Uri.parse('$SERVER_API_URL/sessions'),
@@ -88,11 +86,8 @@ Future<void> createSession(String name, int slotTal, int slotEnt, bool isActive,
     },
     body: jsonEncode(<String, dynamic>{
       'name': name,
-      'slotTal': slotTal,
-      'slotEnt': slotEnt,
       'isActive': isActive,
       'users': users,
-      'votes': votes,
     }),
   );
 
@@ -304,7 +299,7 @@ Future<void> updateUserAfterMove(String destinationSessionId, String userId) asy
       final sessions = [destinationSessionId];
 
       // Make the update user request
-      await updateUser(userData['epicGamesId'], events, sessions, userData['room'], userData['canAccess'], userData['isAuthorized']);
+      await updateUser(userData['epicGamesId'], sessions, userData['canAccess'], userData['isAuthorized']);
     } else {
       print('Error getting user data: ${getUserResponse.statusCode}');
       // Handle error response

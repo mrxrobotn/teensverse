@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
-const Color chartColor1 = Color(0xFF15CCC7);
+const Color chartColor1 = Color(0xFF28ACF2);
 const Color chartColor2 = Color(0xFFFE0000);
 const Color backgroundColorLight = Color(0xFFF2F6FF);
 const Color backgroundColorDark = Color(0xFF25254B);
 const Color shadowColorLight = Color(0xFF4A5367);
 const Color shadowColorDark = Colors.black;
 const Color cardColor = Colors.green;
+const Color textField = Color(0xFFD9F6FA);
 
-List<String> roles = ['Admin', 'Staff', 'Entrepreneur', 'Talent', 'Visitor'];
+List<String> roles = ['Admin', 'Staff', 'Educator', 'Student', 'Parent'];
 
 class CustomPositioned extends StatelessWidget {
   const CustomPositioned({super.key, required this.child, this.size = 100});

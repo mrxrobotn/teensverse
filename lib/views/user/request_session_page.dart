@@ -2,9 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
-import '../../components/animated_btn.dart';
 import '../../constants.dart';
-import '../../controllers/mailer_controller.dart';
 import '../../controllers/user_controller.dart';
 import 'components/sessions_list.dart';
 
@@ -48,7 +46,7 @@ class _GetAccessState extends State<GetAccess> {
           showDialog<void>(
             context: context,
             builder: (BuildContext context) {
-              return WelcomeBackDialog(room: userData['room']);
+              return const WelcomeBackDialog();
             },
           );
         }
@@ -59,7 +57,7 @@ class _GetAccessState extends State<GetAccess> {
             showDialog<void>(
               context: context,
               builder: (BuildContext context) {
-                return SessionsList(role: userData['role'], userId: userData['_id'], name: userData['name'], room: userData['room']);
+                return SessionsList(role: userData['role'], userId: userData['_id'], name: userData['name']);
               },
             );
           }
@@ -69,7 +67,7 @@ class _GetAccessState extends State<GetAccess> {
             showDialog<void>(
               context: context,
               builder: (BuildContext context) {
-                return NotAuthorizedDialog();
+                return const NotAuthorizedDialog();
               },
             );
           }
@@ -81,14 +79,14 @@ class _GetAccessState extends State<GetAccess> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Ooops..'),
-              content: Text('User is not registered'),
+              title: const Text('Ooops..'),
+              content: const Text('User is not registered'),
               actions: [
                 TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('Close')
+                    child: const Text('Close')
                 )
               ],
             );
@@ -132,7 +130,7 @@ class _GetAccessState extends State<GetAccess> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Image.asset('assets/Backgrounds/logo_metaverse.png', width: 300, height: 300,),
+                        Image.asset('assets/Backgrounds/logo.png', width: 300, height: 300,),
                         const SizedBox(
                           child: Column(
                             children: [
@@ -262,22 +260,18 @@ class _GetAccessState extends State<GetAccess> {
 
 
 class WelcomeBackDialog extends StatelessWidget {
-  final String room;
 
-  WelcomeBackDialog({Key? key, required this.room}) : super(key: key);
+  const WelcomeBackDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Welcome back!'),
-      content: SingleChildScrollView(
+      content: const SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            const Text(
-              'Your request to join a session has been accepted. Enjoy the experience',
-            ),
             Text(
-              'Your room number is : $room',
+              'Your request to join a session has been accepted. Enjoy the experience',
             ),
           ],
         ),
@@ -295,6 +289,8 @@ class WelcomeBackDialog extends StatelessWidget {
 }
 
 class NotAuthorizedDialog extends StatelessWidget {
+  const NotAuthorizedDialog({super.key});
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

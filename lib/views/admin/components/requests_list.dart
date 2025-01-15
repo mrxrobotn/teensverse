@@ -20,7 +20,7 @@ class _RequestsListState extends State<RequestsList> {
   late TextEditingController searchController;
   late List<User> allUsers;
 
-  List<String> rolesFilter = ['All', 'Entrepreneur', 'Talent', 'Visitor'];
+  List<String> rolesFilter = ['All', 'Educator', 'Student', 'Parent'];
   String selectedRoleFilter = 'All';
 
   @override
@@ -269,7 +269,7 @@ class _RequestsListState extends State<RequestsList> {
                                       subject: 'Welcome to Talent Verse!',
                                       htmlContent: htmlFirstContent,
                                     );
-                                    updateUser(user.epicGamesId, user.events, user.sessions, user.room, !user.canAccess, !user.isAuthorized);
+                                    updateUser(user.epicGamesId, user.sessions, !user.canAccess, !user.isAuthorized);
                                     Navigator.of(context).pop();
 
                                     const snackBar = SnackBar(
@@ -370,7 +370,7 @@ class _UsersDataSource extends DataTableSource {
                             Navigator.of(context).pop();
                           });
                         }
-                        updateUser(user.epicGamesId, user.events, ['65b8ec1c230dcc92f073cf65'], user.room, user.canAccess, !user.isAuthorized);
+                        updateUser(user.epicGamesId, ['65b8ec1c230dcc92f073cf65'], user.canAccess, !user.isAuthorized);
                       },
                     ),
                     TextButton(

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../constants.dart';
 import '../../controllers/user_controller.dart';
 import 'components/sessions_list.dart';
@@ -22,13 +23,14 @@ Future<Object?> RequestDialog(BuildContext context,
       },
       pageBuilder: (context, _, __) => Center(
             child: Container(
-              height: 620,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+              height: 700,
+              margin: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(40),
               decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.95),
-                  borderRadius: const BorderRadius.all(Radius.circular(40))),
-              child: const Scaffold(
+                borderRadius:  BorderRadius.circular(10.0),
+                color: Colors.white,
+              ),
+              child: Scaffold(
                 backgroundColor: Colors.transparent,
                 resizeToAvoidBottomInset:
                     false, // avoid overflow error when keyboard shows up
@@ -37,30 +39,34 @@ Future<Object?> RequestDialog(BuildContext context,
                   children: [
                     SingleChildScrollView(
                       child: Column(children: [
-                        Text(
-                          "Request Access",
-                          style: TextStyle(fontSize: 34, fontFamily: "Poppins"),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          child: Text(
-                            "Request access to enter and join the experience in the TalentVerse.",
-                            textAlign: TextAlign.center,
+                        Container(
+                          decoration: BoxDecoration(
+                            image: const DecorationImage(
+                                image: AssetImage("assets/Backgrounds/button-bg.png"),
+                                repeat: ImageRepeat.repeat
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Request Access",
+                                  style: TextStyle(fontSize: 34, color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "Request access to enter and join the experience in the TeensVerse.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        RequestForm()
+                        const MobileRequestForm()
                       ]),
                     ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: -48,
-                      child: CircleAvatar(
-                        radius: 16,
-                        backgroundColor: chartColor2,
-                        child: Icon(Icons.close, color: Colors.black),
-                      ),
-                    )
                   ],
                 ),
               ),
@@ -68,16 +74,16 @@ Future<Object?> RequestDialog(BuildContext context,
           )).then(onClosed);
 }
 
-class RequestForm extends StatefulWidget {
-  const RequestForm({
+class MobileRequestForm extends StatefulWidget {
+  const MobileRequestForm({
     super.key,
   });
 
   @override
-  State<RequestForm> createState() => _RequestFormState();
+  State<MobileRequestForm> createState() => _RequestFormState();
 }
 
-class _RequestFormState extends State<RequestForm> {
+class _RequestFormState extends State<MobileRequestForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool isShowLoading = false;
   bool isShowConfetti = false;
@@ -95,7 +101,8 @@ class _RequestFormState extends State<RequestForm> {
   String room = "0";
   bool canAccess = false;
   bool isAuthorized = false;
-  String role = 'Entrepreneur';
+  String role = 'Student';
+  bool _isButtonDisabled = false;
 
   StateMachineController getRiveController(Artboard artboard) {
     StateMachineController? controller =
@@ -146,7 +153,7 @@ class _RequestFormState extends State<RequestForm> {
               showDialog<void>(
                 context: context,
                 builder: (BuildContext context) {
-                  return SessionsList(role: userData['role'], userId: userData['_id'], name: userData['name'], room: userData['room'],);
+                  return SessionsList(role: userData['role'], userId: userData['_id'], name: userData['name']);
                 },
               );
             }
@@ -184,6 +191,9 @@ class _RequestFormState extends State<RequestForm> {
             print('User does not exist.');
           }
         });
+        setState(() {
+          _isButtonDisabled = true;
+        });
       }
     } catch (e) {
       print('Failed to check user existence: $e');
@@ -203,11 +213,11 @@ class _RequestFormState extends State<RequestForm> {
           setState(() {
             isShowLoading = false;
           });
-          createUser(epicGamesId.text, name.text, email.text, events, sessions, room, canAccess, isAuthorized, role);
+          createUser(epicGamesId.text, name.text, email.text, sessions, canAccess, isAuthorized, role);
           epicGamesId.text = "";
           name.text = "";
           email.text = "";
-          role = "Entrepreneur";
+          role = "Student";
 
           showDialog<void>(
             context: context,
@@ -257,8 +267,14 @@ class _RequestFormState extends State<RequestForm> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0, bottom: 16),
+                  const SizedBox(height: 6),
+                  const Text("NAME"),
+                  const SizedBox(height: 6),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: textField, // Container background color
+                    ),
                     child: TextFormField(
                       controller: name,
                       validator: (value) {
@@ -268,121 +284,138 @@ class _RequestFormState extends State<RequestForm> {
                         return null;
                       },
                       decoration: const InputDecoration(
-                        labelText: 'NAME*',
-                        hintText: 'name',
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Icon(Icons.account_circle),
-                        ),
-                        errorStyle: TextStyle(
-                          color: chartColor2,
-                        ),
+                        hintText: 'Username',
+                        filled: true,
+                        fillColor: Colors.transparent,
+                        errorStyle: TextStyle(color: chartColor2),
+                        border: InputBorder.none,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0, bottom: 16),
+                  const SizedBox(height: 6),
+                  const Text("EMAIL"),
+                  const SizedBox(height: 6),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: textField, // Container background color
+                    ),
                     child: TextFormField(
                       controller: email,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Please enter an email address";
-                        } else if (!value.contains('@')) {
+                        } else if (!RegExp(
+                            r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
+                            .hasMatch(value)) {
                           return "Please enter a valid email address";
                         }
                         return null;
                       },
                       decoration: const InputDecoration(
-                        labelText: 'EMAIL*',
-                        hintText: 'email',
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Icon(Icons.email_rounded),
-                        ),
-                        errorStyle: TextStyle(
-                          color: chartColor2,
-                        ),
+                        hintText: 'Email',
+                        filled: true,
+                        fillColor: Colors.transparent,
+                        errorStyle: TextStyle(color: chartColor2),
+                        border: InputBorder.none,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0, bottom: 16),
+                  const SizedBox(height: 6),
+                  const Text("EPIC GAMES ID"),
+                  const SizedBox(height: 6),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: textField, // Container background color
+                    ),
                     child: TextFormField(
                       controller: epicGamesId,
                       validator: (value) {
-                        if (value!.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return "Please enter an ID";
-                        } else if (value.length < 8) {
-                          return "Please enter a valid ID";
+                        } else if (!RegExp(r'^[a-z0-9]{32}$').hasMatch(value)) {
+                          return "Please enter a valid Epic Games ID (32 characters)";
                         }
                         return null;
                       },
                       decoration: const InputDecoration(
-                        labelText: 'EPIC GAMES ID*',
-                        hintText: 'id',
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Icon(Icons.computer),
-                        ),
-                        errorStyle: TextStyle(
-                          color: chartColor2,
-                        ),
+                        hintText: 'Epic Games ID',
+                        filled: true,
+                        fillColor: Colors.transparent,
+                        errorStyle: TextStyle(color: chartColor2),
+                        border: InputBorder.none,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0, bottom: 16),
-                    child: DropdownButtonFormField<String>(
-                      value: role,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          role = newValue!;
-                        });
+                  const SizedBox(height: 6),
+                  Wrap(
+                    children: [
+                      const Text(
+                          "If you don't have an Epic Games account, please follow "),
+                      InkWell(
+                          child: const Text(
+                            'this link.',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: chartColor1),
+                          ),
+                          onTap: () => launchUrl(Uri.parse(
+                              'https://www.epicgames.com/id/register/date-of-birth?redirect_uri=https%3A%2F%2Fwww.epicgames.com%2Faccount'))),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  const Text("ROLE"),
+                  const SizedBox(height: 6),
+                  DropdownButtonFormField<String>(
+                    value: role,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        role = newValue!;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(27),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                        const BorderSide(width: 3, color: textField),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          width: 3,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      hintText: 'Select an option',
+                    ),
+                    items: <String>['Student', 'Parent', 'Educator']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 6),
+                  ElevatedButton.icon(
+                      onPressed: _isButtonDisabled
+                          ? null
+                          : () {
+                        checkUserAndSendRequest(epicGamesId.text);
                       },
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(27),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        hintText: 'Select an option',
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: chartColor1,
+                          minimumSize: const Size(double.infinity, 56),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                              BorderRadius.all(Radius.circular(10)))),
+                      icon: const Icon(
+                        CupertinoIcons.arrow_right,
+                        color: backgroundColorLight,
                       ),
-                      items: <String>['Entrepreneur', 'Talent', 'Visitor']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0, bottom: 24),
-                    child: ElevatedButton.icon(
-                        onPressed: () {
-                          checkUserAndSendRequest(epicGamesId.text);
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: chartColor1,
-                            minimumSize: const Size(double.infinity, 56),
-                            shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                        icon: const Icon(
-                          CupertinoIcons.arrow_right,
-                          color: backgroundColorDark,
-                        ),
-                        label: const Text("Request",
-                            style: TextStyle(color: backgroundColorDark))),
-                  ),
+                      label: const Text("Request",
+                          style: TextStyle(color: backgroundColorLight))),
                 ],
               ),
             )),

@@ -111,7 +111,7 @@ class _NewSessionFormState extends State<NewSessionForm> {
           setState(() {
             isShowLoading = false;
           });
-          createSession(name.text, slotTal, slotEnt, isActive, users, votes);
+          createSession(name.text, isActive, users);
           name.text = "";
           isActive = true;
           Navigator.of(context).pop();

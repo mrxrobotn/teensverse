@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../private_credentials.dart';
 import '../models/user.dart';
 
-Future<void> createUser(String epicGamesId, String name, String email, List<String> events, List<String> sessions, String room, bool canAccess,bool isAuthorized, String role) async {
+Future<void> createUser(String epicGamesId, String name, String email, List<String> sessions, bool canAccess, bool isAuthorized, String role) async {
 
   final response = await http.post(
     Uri.parse('$SERVER_API_URL/users'),
@@ -14,9 +14,7 @@ Future<void> createUser(String epicGamesId, String name, String email, List<Stri
       'epicGamesId': epicGamesId,
       'name': name,
       'email': email,
-      'events': events,
       'sessions': sessions,
-      'room': room,
       'canAccess': canAccess,
       'isAuthorized': isAuthorized,
       'role': role,
@@ -73,16 +71,14 @@ Future<List<User>> fetchUsers() async {
   }
 }
 
-Future<void> updateUser(String epicGamesId, List<String> events, List<String> sessions, String room, bool canAccess, bool isAuthorized) async {
+Future<void> updateUser(String epicGamesId, List<String> sessions, bool canAccess, bool isAuthorized) async {
   final response = await http.put(
     Uri.parse('$SERVER_API_URL/users/$epicGamesId'),
     headers: {
       'Content-Type': 'application/json',
     },
     body: jsonEncode({
-      'events': events,
       'sessions': sessions,
-      'room': room,
       'canAccess': canAccess,
       'isAuthorized': isAuthorized,
     }),
@@ -115,13 +111,12 @@ Future<void> updateUserRole(String epicGamesId, String role) async {
   }
 }
 
-Future<void> deleteSessionAndEventFromUser(String userId, String event, String session) async {
-  final String apiUrl = 'YOUR_SERVER_API_ENDPOINT/users/$userId'; // Replace with your actual API endpoint
+Future<void> deleteSessionFromUser(String userId, String session) async {
+  final String apiUrl = '$SERVER_API_URL/users/$userId';
 
   final Map<String, String> headers = {'Content-Type': 'application/json'};
 
   final Map<String, dynamic> requestBody = {
-    'events': [event],
     'sessions': [session],
   };
 

@@ -18,7 +18,7 @@ class _UsersListState extends State<UsersList> {
   late TextEditingController searchController;
   late List<User> allUsers;
 
-  List<String> rolesFilter = ['All', 'Admin', 'Staff', 'Entrepreneur', 'Talent', 'Visitor'];
+  List<String> rolesFilter = ['All', 'Admin', 'Staff', 'Educator', 'Student', 'Parent'];
   String selectedRoleFilter = 'All';
 
   @override
@@ -50,6 +50,7 @@ class _UsersListState extends State<UsersList> {
               user.epicGamesId.toLowerCase().contains(searchInput))
           .toList();
     }
+
     _usersController.add(usersWithAccess);
   }
 
@@ -125,25 +126,7 @@ class _UsersListState extends State<UsersList> {
     return SizedBox(
       width: double.infinity,
       child: PaginatedDataTable(
-        header: Row(
-          children: [
-            const Text('Filter by Role: '),
-            DropdownButton<String>(
-              value: selectedRoleFilter,
-              items: rolesFilter.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedRoleFilter = newValue!;
-                });
-              },
-            ),
-          ],
-        ),
+
         columnSpacing: 56,
         horizontalMargin: 20.0,
         rowsPerPage: 12,
@@ -257,20 +240,21 @@ class _UsersListState extends State<UsersList> {
                         const SizedBox(
                             width: 10), // Add spacing between text and dropdown
                         DropdownButton<String>(
-                          value: user.role,
-                          items: roles.map((String value) {
+                          value: rolesFilter.contains(user.role) ? user.role : 'All',
+                          items: rolesFilter.map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
                             );
                           }).toList(),
                           onChanged: (String? newValue) {
-                            setState(() {
-                              user.role = newValue!;
-                              updateUserRole(user.epicGamesId, user.role);
-                            });
+                            if (newValue != null) {
+                              setState(() {
+                                user.role = newValue;
+                              });
+                            }
                           },
-                        ),
+                        )
                       ],
                     ),
                   ),
@@ -290,7 +274,7 @@ class _UsersListState extends State<UsersList> {
                                 TextButton(
                                   child: const Text('Yes'),
                                   onPressed: () {
-                                    updateUser(user.epicGamesId, user.events, user.sessions, user.room, !user.canAccess, user.isAuthorized);
+                                    updateUser(user.epicGamesId, user.sessions, !user.canAccess, user.isAuthorized);
                                     Navigator.of(context).pop();
                                     const snackBar = SnackBar(
                                       content: Text(
@@ -389,7 +373,7 @@ class _UsersDataSource extends DataTableSource {
                     TextButton(
                       child: const Text('Yes'),
                       onPressed: () {
-                        updateUser(user.epicGamesId, user.events, user.sessions, user.room, !user.canAccess, user.isAuthorized);
+                        updateUser(user.epicGamesId, user.sessions, !user.canAccess, user.isAuthorized);
                         Navigator.of(context).pop();
                         const snackBar = SnackBar(
                           content:

@@ -2,7 +2,6 @@ import 'dart:async';
 import '../../../controllers/event_controller.dart';
 import '../../../models/event.dart';
 import 'package:flutter/material.dart';
-import '../../../constants.dart';
 import '../../../controllers/session_controller.dart';
 import '../../../models/session.dart';
 
@@ -10,9 +9,7 @@ class SessionsList extends StatefulWidget {
   final String role;
   final String userId;
   final String name;
-  final String room;
-  const SessionsList({Key? key, required this.role, required this.userId, required this.name, required this.room})
-      : super(key: key);
+  const SessionsList({super.key, required this.role, required this.userId, required this.name});
 
   @override
   _SessionsListState createState() => _SessionsListState();
@@ -153,7 +150,7 @@ class _SessionsListState extends State<SessionsList> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12.0),
                                     ),
-                                    child: ListTile(
+                                    /*child: ListTile(
                                       title: Text("Session $lastCharacter"),
                                       onTap: () {
                                         setState(() {
@@ -194,7 +191,7 @@ class _SessionsListState extends State<SessionsList> {
                                           ? const Icon(Icons.check_circle,
                                           color: chartColor1)
                                           : null,
-                                    ),
+                                    ),*/
                                   );
                                 },
                               ),

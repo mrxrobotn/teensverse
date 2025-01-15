@@ -129,24 +129,6 @@ class _SessionsPageState extends State<SessionsPage> {
                         DataColumn(
                             label: Row(
                               children: [
-                                Icon(Icons.event_available, color: Colors.orange),
-                                SizedBox(width: 5),
-                                Text('Talents Slots Available', style: TextStyle(fontWeight: FontWeight.bold))
-                              ],
-                            )
-                        ),
-                        DataColumn(
-                            label: Row(
-                              children: [
-                                Icon(Icons.event_available),
-                                SizedBox(width: 5),
-                                Text('Entrepreneurs Slots Available', style: TextStyle(fontWeight: FontWeight.bold))
-                              ],
-                            )
-                        ),
-                        DataColumn(
-                            label: Row(
-                              children: [
                                 Icon(Icons.supervisor_account_sharp),
                                 SizedBox(width: 5),
                                 Text('Users', style: TextStyle(fontWeight: FontWeight.bold))
@@ -192,7 +174,7 @@ class _UsersDataSource extends DataTableSource {
   final List<Session> _sessions;
   final BuildContext context;
 
-  List<String> rolesFilter = ['All', 'Entrepreneur', 'Talent', 'Visitor'];
+  List<String> rolesFilter = ['All', 'Educator', 'Student', 'Parent'];
 
   _UsersDataSource({
     required List<Session> sessions,
@@ -208,30 +190,15 @@ class _UsersDataSource extends DataTableSource {
     final session = _sessions[index];
     return DataRow(cells: [
       DataCell(Text(session.name)),
-      DataCell(Text('${session.slotTal.toString()} / 12')),
-      DataCell(Text('${session.slotEnt.toString()} / 8')),
       DataCell(
-        Row(
-          children: [
-            TextButton(
-              onPressed: () async {
-                List<dynamic> usersList = await getUsersDataInSession(session.name);
+        TextButton(
+          onPressed: () async {
+            List<dynamic> usersList = await getUsersDataInSession(session.name);
 
-                _showUsersPopup(session.name, session.slotTal, session.slotEnt, session.isActive, session.users, usersList, rolesFilter, session.id );
-              },
-              child: const Text('Show users'),
-            ),
-            const Text(' | '),
-            TextButton(
-              onPressed: () async {
-                List<dynamic> usersList = await getUsersDataInSession(session.name);
-
-                _showMarksPopup(session.name, session.id, usersList, _sessions);
-              },
-              child: const Text('Show marks'),
-            )
-          ],
-        )
+            _showUsersPopup(session.name, session.isActive, session.users, usersList, rolesFilter, session.id );
+          },
+          child: const Text('Show users'),
+        ),
       ),
       DataCell(
         ElevatedButton.icon(
@@ -249,7 +216,7 @@ class _UsersDataSource extends DataTableSource {
                     TextButton(
                       child: const Text('Yes'),
                       onPressed: () {
-                        updateSession(session.name, session.slotTal, session.slotEnt, !session.isActive, session.users, false);
+                        updateSession(session.name, !session.isActive, session.users, false);
                         Navigator.of(context).pop();
                         const snackBar = SnackBar(
                           content:
@@ -343,7 +310,7 @@ class _UsersDataSource extends DataTableSource {
   @override
   int get selectedRowCount => 0;
 
-  void _showUsersPopup(String name, int slotTal, int slotEnt, bool isActive, List<String> users, List<dynamic> usersList, List<String> roles, String sessionId) {
+  void _showUsersPopup(String name, bool isActive, List<String> users, List<dynamic> usersList, List<String> roles, String sessionId) {
     String selectedRoleFilter = 'All';
 
     showDialog(
@@ -492,8 +459,7 @@ class _UsersDataSource extends DataTableSource {
                                                           events.add(eventId);
 
                                                           if (user['role'] == 'Talent') {
-                                                            updateUser(user['epicGamesId'], events, [sessionId], room.text, true, user['isAuthorized']);
-                                                            slotTal--;
+                                                            updateUser(user['epicGamesId'], [sessionId], true, user['isAuthorized']);
                                                             /*sendEmail(
                                                                 toEmail: user['email'],
                                                                 toName: user['name'],
@@ -501,8 +467,7 @@ class _UsersDataSource extends DataTableSource {
                                                                 htmlContent: htmlSecondContent
                                                             );*/
                                                           } else {
-                                                            updateUser(user['epicGamesId'], events, [sessionId], "Entrepreneur", true, user['isAuthorized']);
-                                                            slotEnt--;
+                                                            updateUser(user['epicGamesId'], [sessionId], true, user['isAuthorized']);
                                                             /*sendEmail(
                                                                 toEmail: user['email'],
                                                                 toName: user['name'],
@@ -515,7 +480,7 @@ class _UsersDataSource extends DataTableSource {
                                                             // Update other data as needed
                                                           });
                                                           room .text = "";
-                                                          updateSession(name, slotTal, slotEnt, isActive, users, true);
+                                                          updateSession(name, isActive, users, true);
 
                                                           Navigator.of(context).pop();
 
@@ -575,190 +540,156 @@ class _UsersDataSource extends DataTableSource {
                                   itemBuilder: (BuildContext context, int index) {
                                     final user = usersList[index];
                                     if (selectedRoleFilter == 'All' || user['role'] == selectedRoleFilter) {
-                                      if(user['room'] != "0") {
-                                        return Card(
-                                          elevation: 2,
-                                          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                                          child: ListTile(
-                                            contentPadding: const EdgeInsets.all(16),
-                                            leading: const CircleAvatar(
-                                              radius: 24,
-                                              backgroundColor: Colors.blue,
-                                              child: Icon(Icons.person),
+                                      return Card(
+                                        elevation: 2,
+                                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                                        child: ListTile(
+                                          contentPadding: const EdgeInsets.all(16),
+                                          leading: const CircleAvatar(
+                                            radius: 24,
+                                            backgroundColor: Colors.blue,
+                                            child: Icon(Icons.person),
+                                          ),
+                                          title: Text(
+                                            user['name'],
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                            title: Text(
-                                              user['name'],
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            subtitle: Text(user['role']),
-                                            trailing: Column(
-                                              children: [
-                                                const Text("Room",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15
-                                                  ),
-                                                ),
-                                                Text(user['room'],
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            onTap: () {
-                                              /*final eventId = await findEventBySessionId(sessionId);
+                                          ),
+                                          subtitle: Text(user['role']),
+                                          onTap: () {
+                                            /*final eventId = await findEventBySessionId(sessionId);
                                               final eventdata = await getEventDataById(eventId);
                                               String session1id = eventdata?["sessions"][0];
                                               String session2id = eventdata?["sessions"][1];
-                                              int selectedIndex = -1;*/
+                                              int selectedIndex = -1;
 
-                                              showDialog<void>(
-                                                context: context,
-                                                builder: (BuildContext context) {
-                                                  return AlertDialog(
-                                                    title: const Text('Update user'),
-                                                    content: Form(
-                                                        key: _formKey,
-                                                        child: SingleChildScrollView(
-                                                          child: Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              const Text(
-                                                                "New room number*",
-                                                                style: TextStyle(color: Colors.black54),
-                                                              ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.only(top: 8.0, bottom: 16),
-                                                                child: TextFormField(
-                                                                  controller: room,
-                                                                  keyboardType: TextInputType.number,
-                                                                  enabled: user['role'] == 'Talent',
-                                                                  validator: (value) {
+                                            showDialog<void>(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text('Update user'),
+                                                  content: Form(
+                                                      key: _formKey,
+                                                      child: SingleChildScrollView(
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            const Text(
+                                                              "New room number*",
+                                                              style: TextStyle(color: Colors.black54),
+                                                            ),
+                                                            Padding(
+                                                              padding: const EdgeInsets.only(top: 8.0, bottom: 16),
+                                                              child: TextFormField(
+                                                                controller: room,
+                                                                keyboardType: TextInputType.number,
+                                                                enabled: user['role'] == 'Talent',
+                                                                validator: (value) {
 
-                                                                    RegExp numberPattern = RegExp(r'^(1[0-2]|[1-9])$');
+                                                                  RegExp numberPattern = RegExp(r'^(1[0-2]|[1-9])$');
 
-                                                                    if (user['role'] == 'Talent') {
+                                                                  if (user['role'] == 'Talent') {
 
-                                                                      if (!numberPattern.hasMatch(value!)) {
-                                                                        return 'Please enter a number between 1 and 12';
-                                                                      }
+                                                                    if (!numberPattern.hasMatch(value!)) {
+                                                                      return 'Please enter a number between 1 and 12';
                                                                     }
-                                                                    return null;
-                                                                  },
-                                                                  decoration: const InputDecoration(
-                                                                    prefixIcon: Padding(
-                                                                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                                                      child: Icon(Icons.numbers),
-                                                                    ),
-                                                                    errorStyle: TextStyle(
-                                                                      color: chartColor2,
-                                                                    ),
+                                                                  }
+                                                                  return null;
+                                                                },
+                                                                decoration: const InputDecoration(
+                                                                  prefixIcon: Padding(
+                                                                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                                                    child: Icon(Icons.numbers),
+                                                                  ),
+                                                                  errorStyle: TextStyle(
+                                                                    color: chartColor2,
                                                                   ),
                                                                 ),
                                                               ),
-                                                              const Text(
-                                                                "New Session ID",
-                                                                style: TextStyle(color: Colors.black54),
-                                                              ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.only(top: 8.0, bottom: 16),
-                                                                child: TextFormField(
-                                                                  controller: newSessionId,
-                                                                  decoration: const InputDecoration(
-                                                                    prefixIcon: Padding(
-                                                                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                                                      child: Icon(Icons.numbers),
-                                                                    ),
-                                                                    errorStyle: TextStyle(
-                                                                      color: chartColor2,
-                                                                    ),
+                                                            ),
+                                                            const Text(
+                                                              "New Session ID",
+                                                              style: TextStyle(color: Colors.black54),
+                                                            ),
+                                                            Padding(
+                                                              padding: const EdgeInsets.only(top: 8.0, bottom: 16),
+                                                              child: TextFormField(
+                                                                controller: newSessionId,
+                                                                decoration: const InputDecoration(
+                                                                  prefixIcon: Padding(
+                                                                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                                                    child: Icon(Icons.numbers),
+                                                                  ),
+                                                                  errorStyle: TextStyle(
+                                                                    color: chartColor2,
                                                                   ),
                                                                 ),
                                                               ),
-                                                            ],
-                                                          ),
-                                                        )
-                                                    ),
-                                                    actions: [
-                                                      TextButton(
-                                                        onPressed: () async {
-                                                          if (_formKey.currentState!.validate()) {
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () async {
+                                                        if (_formKey.currentState!.validate()) {
 
-                                                            List<String> events = (user['events'] as List<dynamic>).cast<String>();
-                                                            List<String> sessions = (user['sessions'] as List<dynamic>).cast<String>();
+                                                          List<String> sessions = (user['sessions'] as List<dynamic>).cast<String>();
 
-                                                            if (room.text.isNotEmpty) {
-                                                              updateUser(user['epicGamesId'], events, sessions, room.text, true, user['isAuthorized']);
-                                                            }
-
-                                                            if (newSessionId.text.isNotEmpty) {
-                                                              Map<String, dynamic> newSessionData = await getSessionById(newSessionId.text);
-                                                              moveUserToAnotherSession(sessionId, newSessionId.text, user['_id']);
-                                                              int newSessionSlotTal = newSessionData['slotTal'];
-                                                              int newSessionSlotEnt = newSessionData['slotEnt'];
-
-                                                              if (user['role'] == 'Talent') {
-                                                                slotTal++;
-                                                                newSessionSlotTal--;
-                                                              }
-                                                              else {
-                                                                slotEnt++;
-                                                                newSessionSlotEnt--;
-                                                              }
-                                                              updateSession(name, slotTal, slotEnt, isActive, users, false);
-                                                              updateSession(newSessionData['name'], newSessionSlotTal, newSessionSlotEnt, newSessionData['isActive'], newSessionData['users'], false);
-                                                            }
-
-                                                            Navigator.of(context).pop();
-
-                                                            newSessionId.text = "";
-                                                            room .text = "";
-
-                                                            const snackBar = SnackBar(
-                                                              content: Text('The user has been updated'),
-                                                            );
-                                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                                          if (room.text.isNotEmpty) {
+                                                            updateUser(user['epicGamesId'], sessions, true, user['isAuthorized']);
                                                           }
-                                                        },
-                                                        child: const Text('Update'),
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () {
 
-                                                          if (user['role'] == 'Talent') {
-                                                            slotTal++;
-                                                          } else {
-                                                            slotEnt++;
+                                                          if (newSessionId.text.isNotEmpty) {
+                                                            Map<String, dynamic> newSessionData = await getSessionById(newSessionId.text);
+                                                            moveUserToAnotherSession(sessionId, newSessionId.text, user['_id']);
+
+                                                            updateSession(name, isActive, users, false);
+                                                            updateSession(newSessionData['name'], newSessionData['isActive'], newSessionData['users'], false);
                                                           }
-                                                          updateUser(user['epicGamesId'], [], [], "0", false, true);
-                                                          deleteUserFromSession(name, user['_id']);
-                                                          updateSession(name, slotTal, slotEnt, isActive, users, true);
 
                                                           Navigator.of(context).pop();
+
+                                                          newSessionId.text = "";
+                                                          room .text = "";
+
                                                           const snackBar = SnackBar(
-                                                            content: Text('The user has been deleted'),
+                                                            content: Text('The user has been updated'),
                                                           );
                                                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                                        },
-                                                        child: const Text('Delete'),
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context).pop();
-                                                        },
-                                                        child: const Text('Close'),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            },
-                                          ),
-                                        );
-                                      }
+                                                        }
+                                                      },
+                                                      child: const Text('Update'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        updateUser(user['epicGamesId'], [], false, true);
+                                                        deleteUserFromSession(name, user['_id']);
+                                                        updateSession(name, isActive, users, true);
+
+                                                        Navigator.of(context).pop();
+                                                        const snackBar = SnackBar(
+                                                          content: Text('The user has been deleted'),
+                                                        );
+                                                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                                      },
+                                                      child: const Text('Delete'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: const Text('Close'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );*/
+                                          },
+                                        ),
+                                      );
                                     }
                                     return Container();
                                   },

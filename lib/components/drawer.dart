@@ -8,16 +8,14 @@ import '../views/admin/components/admin_provider.dart';
 class MyDrawer extends StatefulWidget {
   final VoidCallback displayRequests;
   final VoidCallback displayUsers;
-  final VoidCallback displayEvents;
   final VoidCallback displaySessions;
 
   const MyDrawer({
-    Key? key,
+    super.key,
     required this.displayRequests,
     required this.displayUsers,
-    required this.displayEvents,
     required this.displaySessions,
-  }) : super(key: key);
+  });
 
   @override
   State<MyDrawer> createState() => _MyDrawerState();
@@ -66,7 +64,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 ),
                 accountEmail: const Text('production@dall4all.org'),
                 currentAccountPictureSize: const Size.square(60),
-                currentAccountPicture: Image.asset("assets/Backgrounds/logo_metaverse.png"),
+                currentAccountPicture: Image.asset("assets/Backgrounds/logo.png"),
               ),
             ),
             const SizedBox(height: 40),
@@ -111,11 +109,6 @@ class _MyDrawerState extends State<MyDrawer> {
                   ),
                 );
               },
-            ),
-            ListTile(
-              leading: const Icon(Icons.event, color: backgroundColorLight),
-              title: const Text(' Events ' ,style: TextStyle(color: backgroundColorLight)),
-              onTap: widget.displayEvents,
             ),
             ListTile(
               leading: const Icon(Icons.event_note_outlined, color: backgroundColorLight),

@@ -1,6 +1,4 @@
-import '../../../views/admin/components/events_page.dart';
 import '../../../views/admin/components/sessions_page.dart';
-
 import '/components/appbar.dart';
 import '/components/drawer.dart';
 import '/views/admin/components/requests_list.dart';
@@ -43,14 +41,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
     });
   }
 
-  void openEvents() {
-    setState(() {
-      currentWidget = const SingleChildScrollView(
-        child: EventsPage(),
-      );
-    });
-  }
-
   void openSessions() {
     setState(() {
       currentWidget = const SingleChildScrollView(
@@ -69,7 +59,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               child: MyAppBar(),
             ),
             body: Expanded(child: currentWidget),
-            drawer: MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions, displayEvents: openEvents),
+            drawer: MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions),
           ),
           phone: Scaffold(
             appBar: const PreferredSize(
@@ -78,7 +68,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             body: Expanded(child: currentWidget),
             drawer:
-            MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions, displayEvents: openEvents),
+            MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions),
           ),
           tablet: Scaffold(
             appBar: const PreferredSize(
@@ -87,27 +77,27 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             body: Expanded(child: currentWidget),
             drawer:
-            MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions, displayEvents: openEvents),
+            MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions),
           ),
           largeTablet: Scaffold(
             body: Row(
               children: [
-                MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions, displayEvents: openEvents),
+                MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions),
                 Expanded(child: currentWidget)
               ],
             ),
             drawer:
-            MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions, displayEvents: openEvents),
+            MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions),
           ),
           computer: Scaffold(
             body: Row(
               children: [
-                MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions, displayEvents: openEvents),
+                MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions),
                 Expanded(child: currentWidget)
               ],
             ),
             drawer:
-            MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions, displayEvents: openEvents),
+            MyDrawer(displayRequests: openRequests, displayUsers: openUsers, displaySessions: openSessions),
           ),
       )
     );
