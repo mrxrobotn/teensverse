@@ -1,6 +1,4 @@
 import 'dart:async';
-import '../../../controllers/event_controller.dart';
-import '../../../models/event.dart';
 import 'package:flutter/material.dart';
 import '../../../controllers/session_controller.dart';
 import '../../../models/session.dart';
@@ -17,8 +15,6 @@ class SessionsList extends StatefulWidget {
 
 class _SessionsListState extends State<SessionsList> {
   late StreamController<List<Session>> _sessionsController;
-  late StreamController<List<Event>> _eventsController;
-  late List<Event> allEvents;
 
   late List<Session> allSessions;
   List<Session> selectedSessions = [];
@@ -28,11 +24,6 @@ class _SessionsListState extends State<SessionsList> {
   void initState() {
     super.initState();
     _sessionsController = StreamController<List<Session>>.broadcast();
-    _eventsController = StreamController<List<Event>>.broadcast();
-    fetchEvents().then((events) {
-      allEvents = events;
-      _updateUsersList();
-    });
     fetchActiveSessions().then((sessions) {
       allSessions = sessions;
       _updateUsersList();
@@ -48,12 +39,9 @@ class _SessionsListState extends State<SessionsList> {
 
   void _updateUsersList() {
     List<Session> activeSessions = allSessions.where((session) => session.isActive).toList();
-    List<Event> events = allEvents.toList();
-    _eventsController.add(events);
     _sessionsController.add(activeSessions);
   }
 
-  Event? selectedEvent;
   Session? selectedSession;
 
   @override
@@ -68,51 +56,6 @@ class _SessionsListState extends State<SessionsList> {
             const SizedBox(height: 20),
             Row(
               children: [
-                StreamBuilder<List<Event>>(
-                    stream: _eventsController.stream,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator(); // Placeholder for loading state
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Text('No dates available.'); // Placeholder for empty state
-                      }
-                      return Expanded(
-                        child: SizedBox(
-                          width: 300,
-                          child: Column(
-                            children: [
-                              const Text('Dates Available:'),
-                              SizedBox(
-                                height: 400,
-                                child: ListView.builder(
-                                  itemCount: snapshot.data!.length,
-                                  itemBuilder: (context, index) {
-                                    final event = snapshot.data?[index];
-                                    return Card(
-                                      elevation: 3,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12.0),
-                                      ),
-                                      child: ListTile(
-                                        title: Text(event!.date),
-                                        onTap: () {
-                                          setState(() {
-                                            selectedEvent = event;
-                                          });
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                 ),
                 StreamBuilder<List<Session>>(
                   stream: _sessionsController.stream,
                   builder: (context, snapshot) {
@@ -121,11 +64,7 @@ class _SessionsListState extends State<SessionsList> {
                     }
 
                     List<Session> activeSessions = snapshot.data!;
-                    List<Session> sessionsForSelectedEvent = selectedEvent != null
-                        ? activeSessions.where((session) =>
-                        selectedEvent!.sessions.contains(session.id))
-                        .toList()
-                        : activeSessions.toList();
+
 
                     return Expanded(
                       child: SizedBox(
@@ -133,8 +72,7 @@ class _SessionsListState extends State<SessionsList> {
                         child: Column(
                           children: [
                             const Text('Sessions available:'),
-                            if (selectedEvent != null)
-                            SizedBox(
+                            /*SizedBox(
                               height: 400,
                               child: ListView.builder(
                                 itemCount: sessionsForSelectedEvent.length,
@@ -143,14 +81,13 @@ class _SessionsListState extends State<SessionsList> {
                                   bool isSelected = selectedSession == session;
 
                                   String myString = session.name;
-                                  String lastCharacter = myString.isNotEmpty ? myString.substring(myString.length - 1) : "";
 
                                   return Card(
                                     elevation: 3,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12.0),
                                     ),
-                                    /*child: ListTile(
+                                    child: ListTile(
                                       title: Text("Session $lastCharacter"),
                                       onTap: () {
                                         setState(() {
@@ -191,11 +128,11 @@ class _SessionsListState extends State<SessionsList> {
                                           ? const Icon(Icons.check_circle,
                                           color: chartColor1)
                                           : null,
-                                    ),*/
+                                    ),
                                   );
                                 },
                               ),
-                            ),
+                            ),*/
                           ],
                         ),
                       ),

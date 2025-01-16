@@ -51,35 +51,11 @@ const String htmlFirstContent = '''
         </head>
         <body>
           <p>Hi,</p>
-          <p>Thank you for registering with Talent Verse! We're excited to have you participate in our internal test.</p>
-          <p>To begin your Talent Verse experience, please download our platform (Windows only) using the link below:</p>
-          <p><a href="https://drive.google.com/drive/folders/1uIkAnlKHBdS1XdjNqeCIthOJRQ-KRL-2" download>Download Talent Verse</a></p>
+          <p>Thank you for registering with Teens Verse! We're excited to have you participate in our internal test.</p>
+          <p>To begin your Teens Verse experience, please download our platform (Windows only) using the link below:</p>
+          <p><a href="https://drive.google.com/drive/folders/17BOnaT1aEdXKT8I8EPEOGdJ3DnQLs6ss" download>Download Teens Verse</a></p>
           <p>If you have any questions or need assistance, feel free to contact us at production@dall4all.org.</p>
-          <p>Best regards,<br/>Talent Verse Team</p>
-        </body>
-      </html>
-    ''';
-
-const String htmlSecondContent = '''
-      <html>
-        <head></head>
-        <body>
-          <p>Hello ,</p>
-          <p>Thank you for your request. You are now accepted to be a part in the TalentVerse space</p>
-          <p>Please follow this link if you forget your room number.</p>
-          <a href="https://talentverse-8aa4e.firebaseapp.com/#/sessions">Visit link</a>
-          <p>If you have any questions, feel free to contact us.</p>
-        </body>
-      </html>
-    ''';
-
-const String htmlThirdContent = '''
-      <html>
-        <head></head>
-        <body>
-          <p>Hello ,</p>
-          <p>Thank you for your request. You are now accepted to be a part in the TalentVerse space</p>
-          <p>If you have any questions, feel free to contact us.</p>
+          <p>Best regards,<br/>Teens Verse Team</p>
         </body>
       </html>
     ''';

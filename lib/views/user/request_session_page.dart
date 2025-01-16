@@ -145,7 +145,7 @@ class _GetAccessState extends State<GetAccess> {
                                 height: 16,
                               ),
                               Text(
-                                  "Please enter your EpicGames ID to search / join a live session in the metaverse.")
+                                  "Please enter your EpicGames ID to verify your request for the Metaverse.")
                             ]
                           ),
                         ),

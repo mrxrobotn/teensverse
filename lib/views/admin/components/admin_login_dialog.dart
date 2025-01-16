@@ -41,7 +41,7 @@ Future<Object?> AdminSigninDialog(BuildContext context, {required ValueChanged o
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Text(
-                          "Please login to manage all the incoming requests to the Netinfo Metaverse.",
+                          "Please login to manage all the incoming requests to the Teens Verse.",
                           textAlign: TextAlign.center,
                         ),
                       ),

@@ -1,5 +1,5 @@
 import 'dart:async';
-import '../../../controllers/event_controller.dart';
+import 'package:teensverse/views/admin/components/create_session.dart';
 import '../../../controllers/user_controller.dart';
 import '../../../models/session.dart';
 import 'package:flutter/material.dart';
@@ -57,24 +57,51 @@ class _SessionsPageState extends State<SessionsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Text(
+                const Text(
                   '/',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 8),
-                Text(
+                const SizedBox(height: 8),
+                const Text(
                   'Sessions',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return CreateSession(sessionsNumber: allSessions.length,);
+                          },
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: backgroundColorDark,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      icon: const Icon(
+                          Icons.add,
+                          color: backgroundColorLight),
+                      label: const Text('Create Session',
+                        style: TextStyle(fontSize: 12, color: backgroundColorLight),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -105,6 +132,7 @@ class _SessionsPageState extends State<SessionsPage> {
                 }
 
                 List<Session> activeSession = snapshot.data!;
+                
                 return SizedBox(
                   width: double.infinity,
                   child: SingleChildScrollView(
@@ -180,6 +208,8 @@ class _UsersDataSource extends DataTableSource {
     required List<Session> sessions,
     required this.context,
   }) : _sessions = sessions;
+  
+
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController room = TextEditingController();
@@ -399,121 +429,7 @@ class _UsersDataSource extends DataTableSource {
                                             color: Colors.grey,
                                           ),
                                           onTap: () {
-                                            showDialog<void>(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title: Text('Allow this user to join session $name?'),
-                                                  content: Form(
-                                                      key: _formKey,
-                                                      child: SingleChildScrollView(
-                                                        child: Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            const Text(
-                                                              "Assign a room number*",
-                                                              style: TextStyle(color: Colors.black54),
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.only(top: 8.0, bottom: 16),
-                                                              child: TextFormField(
-                                                                controller: room,
-                                                                keyboardType: TextInputType.number,
-                                                                enabled: user['role'] == 'Talent',
-                                                                validator: (value) {
 
-                                                                  RegExp numberPattern = RegExp(r'^(1[0-2]|[1-9])$');
-
-                                                                  if (user['role'] == 'Talent') {
-                                                                    if (value!.isEmpty) {
-                                                                      return "Please enter a number";
-                                                                    }
-
-                                                                    if (!numberPattern.hasMatch(value)) {
-                                                                      return 'Please enter a number between 1 and 12';
-                                                                    }
-                                                                  }
-                                                                  return null;
-                                                                },
-                                                                decoration: const InputDecoration(
-                                                                  prefixIcon: Padding(
-                                                                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                                                    child: Icon(Icons.numbers),
-                                                                  ),
-                                                                  errorStyle: TextStyle(
-                                                                    color: chartColor2,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      )
-                                                  ),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed: () async {
-                                                        if (_formKey.currentState!.validate()) {
-                                                          String? eventId = await findEventBySessionId(sessionId);
-                                                          List<String> events = List<String>.from(user['events'] ?? []);
-                                                          events.add(eventId);
-
-                                                          if (user['role'] == 'Talent') {
-                                                            updateUser(user['epicGamesId'], [sessionId], true, user['isAuthorized']);
-                                                            /*sendEmail(
-                                                                toEmail: user['email'],
-                                                                toName: user['name'],
-                                                                subject: 'Room N°${room.text}',
-                                                                htmlContent: htmlSecondContent
-                                                            );*/
-                                                          } else {
-                                                            updateUser(user['epicGamesId'], [sessionId], true, user['isAuthorized']);
-                                                            /*sendEmail(
-                                                                toEmail: user['email'],
-                                                                toName: user['name'],
-                                                                subject: 'TalentVerse',
-                                                                htmlContent: htmlThirdContent
-                                                            );*/
-                                                          }
-                                                          setState(() {
-                                                            usersList[index];
-                                                            // Update other data as needed
-                                                          });
-                                                          room .text = "";
-                                                          updateSession(name, isActive, users, true);
-
-                                                          Navigator.of(context).pop();
-
-                                                          const snackBar = SnackBar(
-                                                            content: Text('The user has been accepted'),
-                                                          );
-                                                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-                                                        }
-                                                      },
-                                                      child: const Text('Accept'),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        deleteUserFromSession(name, user['_id']);
-                                                        Navigator.of(context).pop();
-                                                        const snackBar = SnackBar(
-                                                          content: Text('The user has been rejected'),
-                                                        );
-                                                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                                      },
-                                                      child: const Text('Reject'),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context).pop();
-                                                      },
-                                                      child: const Text('Close'),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
                                           },
                                         ),
                                       );
@@ -717,73 +633,6 @@ class _UsersDataSource extends DataTableSource {
       },
     );
   }
-
-  void _showMarksPopup(String name, String sessionId, List<dynamic> usersList, List<Session> sessions) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(
-                'Talents in session $name',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              content: Container(
-                width: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Users Marks'),
-                      FutureBuilder(
-                        future: getTalentsWithMarksInSession(sessionId),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            List<Map<String, dynamic>> talentsWithMarks = snapshot.data!;
-
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: talentsWithMarks.length,
-                              itemBuilder: (context, index) {
-                                final talentId = talentsWithMarks[index]['talentId'];
-                                final mark = talentsWithMarks[index]['mark'];
-
-                                return ListTile(
-                                  title: Text('Talent: $talentId'),
-                                  subtitle: Text('Mark: $mark'),
-                                );
-                              },
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Close'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
 
 }
 

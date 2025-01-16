@@ -266,7 +266,7 @@ class _RequestsListState extends State<RequestsList> {
                                     sendEmail(
                                       toName: user.name,
                                       toEmail: user.email,
-                                      subject: 'Welcome to Talent Verse!',
+                                      subject: 'Welcome to Teens Verse!',
                                       htmlContent: htmlFirstContent,
                                     );
                                     updateUser(user.epicGamesId, user.sessions, !user.canAccess, !user.isAuthorized);
@@ -351,7 +351,7 @@ class _UsersDataSource extends DataTableSource {
                         sendEmail(
                           toName: user.name,
                           toEmail: user.email,
-                          subject: 'Welcome to Talent Verse!',
+                          subject: 'Welcome to Teens Verse!',
                           htmlContent: htmlFirstContent,
                         );
                         Navigator.of(context).pop();
@@ -361,8 +361,6 @@ class _UsersDataSource extends DataTableSource {
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         final userData = await getUserData(user.epicGamesId);
-                        print('EpicGamesID: ${user.epicGamesId}');
-                        print('UserID: ${userData?['_id']}');
                         bool userExists = await checkUserInSessions(userData?['_id']);
                         if (!userExists) {
                           Future.delayed(const Duration(seconds: 1), () async {

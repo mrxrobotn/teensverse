@@ -1,18 +1,31 @@
 import 'dart:convert';
-import '../controllers/event_controller.dart';
 import '../controllers/user_controller.dart';
 import 'package:http/http.dart' as http;
 import '../private_credentials.dart';
 import '../models/session.dart';
 
 Future<List<Session>> fetchSessions() async {
-  final response = await http.get(Uri.parse('$SERVER_API_URL/sessions'));
+  try {
+    final response = await http.get(Uri.parse('$SERVER_API_URL/sessions'));
 
-  if (response.statusCode == 200) {
-    List<dynamic> jsonResponse = json.decode(response.body);
-    return jsonResponse.map((user) => Session.fromJson(user)).toList();
-  } else {
-    throw Exception('Failed to load sessions. Status code: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+      // Assuming the API wraps sessions in a "documents" field
+      if (jsonResponse.containsKey('documents')) {
+        List<dynamic> sessionsJson = jsonResponse['documents'];
+        return sessionsJson.map((session) => Session.fromJson(session)).toList();
+      } else {
+        throw Exception('Malformed API response: "documents" key not found.');
+      }
+    } else {
+      throw Exception(
+          'Failed to load sessions. Status code: ${response.statusCode}, body: ${response.body}');
+    }
+  } catch (e) {
+    // Log or handle the exception as needed
+    print('Error fetching sessions: $e');
+    rethrow;
   }
 }
 
@@ -292,10 +305,8 @@ Future<void> updateUserAfterMove(String destinationSessionId, String userId) asy
     final getUserResponse = await http.get(Uri.parse('$SERVER_API_URL/users/id/$userId'));
     if (getUserResponse.statusCode == 200) {
       final userData = jsonDecode(getUserResponse.body);
-      String eventId = await findEventBySessionId(destinationSessionId);
 
       // Extract the necessary data for update
-      final events = [eventId];
       final sessions = [destinationSessionId];
 
       // Make the update user request

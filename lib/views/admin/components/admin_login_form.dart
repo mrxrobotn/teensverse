@@ -102,17 +102,13 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "EMAIL*",
-                    style: TextStyle(color: Colors.black54),
-                  ),
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 16),
                     child: TextFormField(
                       controller: email,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return "Please enter the admin email";
+                          return "Field Required";
                         } else if (!value.contains('@')) {
                           return "Please enter a valid email address";
                         }
@@ -123,16 +119,14 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
                           padding: EdgeInsets.symmetric(horizontal: 8.0),
                           child: Icon(Icons.email_rounded),
                         ),
+                        hintText: "EMAIL",
                         errorStyle: TextStyle(
                           color: chartColor2,
                         ),
                       ),
                     ),
                   ),
-                  const Text(
-                    "PASSWORD*",
-                    style: TextStyle(color: Colors.black54),
-                  ),
+
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 16),
                     child: TextFormField(
@@ -140,7 +134,7 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
                       obscureText: true,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return "Please enter the admin password";
+                          return "Field Required";
                         } else if (value.length < 8) {
                           return "Password should be 8 characters or more";
                         }
@@ -151,6 +145,7 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
                           padding: EdgeInsets.symmetric(horizontal: 8.0),
                           child: Icon(Icons.password_rounded),
                         ),
+                        hintText: "PASSWORD",
                         errorStyle: TextStyle(
                           color: chartColor2,
                         ),
@@ -170,9 +165,9 @@ class _AdminLoginFormState extends State<AdminLoginForm> {
                                 borderRadius: BorderRadius.all(Radius.circular(10)))),
                         icon: const Icon(
                           CupertinoIcons.arrow_right,
-                          color: backgroundColorDark,
+                          color: textField,
                         ),
-                        label: const Text("Login", style: TextStyle(color: backgroundColorDark))),
+                        label: const Text("Login", style: TextStyle(color: textField))),
                   ),
                 ],
               ),
